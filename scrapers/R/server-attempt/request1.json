@@ -1,0 +1,10 @@
+{
+  userID:            "Lu",
+  unitofMeasureTag:  "1",
+  triptype:          "One Way",
+  cabinclass:        "Economy",
+  noofpassenger:     1,
+  noofArrAirport:    1,
+  depCode:           "BOS",
+  arrCode1:          "ATL"
+}

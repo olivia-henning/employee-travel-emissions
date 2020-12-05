@@ -1,0 +1,2190 @@
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>ICAO Carbon Emissions Calculator </title>
+
+    <link href="/icec/jquery-ui-1.11.4/jquery-ui.css" rel="stylesheet"/>
+<link href="/icec/Content/bootstrap.css" rel="stylesheet"/>
+<link href="/icec/Content/Site.css" rel="stylesheet"/>
+
+    <script src="/icec/Scripts/modernizr-2.8.3.js"></script>
+
+  
+
+    <!-- Bootstrap -->
+    <script src="/icec/Scripts/jquery-2.1.4.js"></script>
+
+    <script src="/icec/Scripts/bootstrap.js"></script>
+<script src="/icec/Scripts/respond.js"></script>
+
+    <script src="/icec/Scripts/d3/d3.min.js"></script>
+
+    <script src="/icec/Scripts/underscore-min.js"></script>
+
+    <script src="/icec/jquery-ui-1.11.4/jquery-ui.js"></script>
+
+
+</head>
+
+<body>
+   
+    
+    
+    
+    <div class="container body-content" style="max-width:960px;width:940px" id="mainContent">
+        
+
+
+
+
+
+
+
+<input type="hidden" name="message" value='' id="hiddenResultCompute" />
+<input type="hidden" name="message" value='' id="hiddenResultComputeDetail" />
+
+
+
+<form action=" " method="post" class="form-horizontal" role="form" autocomplete="on">
+    <div>
+        
+        <div class="form-group ">
+            <div class="col-sm-12">
+                <table class="table table-hover table-condensed" style="font-size:small;">
+                    
+                    <thead>
+                        <tr style=" background-color:#477dc0; color: #ffffff;">
+                            <th class="col-sm-5">
+                                <label for="select1" class="control-label">One Way/Round Trip</label>
+                            </th>
+                            <th class="col-sm-5">
+                                <label for="select2" class="control-label">Cabin Class</label>
+                            </th>
+                            <th class="col-sm-2" style="font-size:small;">
+                                <label for="passengerNo">Number of Passengers</label>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="active">
+                            <td class="col-sm-4">
+                                <select class="form-control" id="select1" name="select1" >
+                                    
+                                    <option>Round Trip</option>
+                                    <option>One Way</option>
+                                    
+                                </select>
+                            </td>
+                            <td class="col-sm-4">
+                                <select class="form-control" id="select2" name="select2" >
+                                    <option>Economy</option>
+                                    <option>Premium</option>
+                                </select>
+                            </td>
+                            <td class="col-sm-4">
+                                <input type="number" id="passengerNo" min="1" max="30" class="form-control" name="passengerNo" value="1" title="input number of passengers">
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <div class="col-sm-12">
+                <table class="table table-hover table-condensed" style="font-size:small;">
+                    
+                    <thead>
+                        <tr style="background-color: #477dc0; color:#ffffff;">
+                            <th class="col-sm-3">Leg</th>
+                            <th class="col-sm-3">From City/Airport</th>
+                            <th class="col-sm-3">To City/Airport</th>
+    
+                        </tr>
+                    </thead>
+                    <tbody  class="citytablebody">
+                        <tr class="active first1">
+                            <th class="col-sm-3">
+                               <label for="ID">1</label>
+                            </th>
+                            <th class="col-sm-3">
+                                <div class="ui-widget">
+                                    <input name="frm1" class="frm1 col-sm-12"  />
+
+                                </div>
+
+                            </th>
+                            <th class="col-sm-3">
+                                <div class="ui-widget">
+                                    <input name="to1" class="to1 col-sm-12"  />
+                                </div>
+                            </th>
+                            
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr class="active foot">
+                            <th>
+                                <input type="button" name="delete_all" class="form-control btn btn-primary" onclick="reduceall()" value="Delete All Location(s)" />
+                            </th>
+                            <th>
+                                <input type="button" name="delete" class="form-control btn btn-primary" onclick="reduce()" value="Delete Leg" />
+                            </th>
+                            <th>
+                                <input type="button" name="add_all" class="form-control btn  btn-primary" onclick="add()" value="Add New Leg" />
+                            </th>
+                            
+                            
+                    </tfoot>
+                </table>
+            </div>
+
+        </div>
+        
+        <div class="form-group text-center">
+            <div class="col-sm-12">
+                <table class="table table-hover table-condensed" style="font-size:small;">
+                    
+                    <thead>
+                        <tr class="active">
+                            <th class="col-sm-6">
+                                <input type="reset" name="reset" id="reset" class="form-control btn btn-primary"  value="Reset" title="clear all input" />
+                            </th>
+                            <th class="col-sm-6">
+                                <input type="button" name="computeByInput" id="computeByInput" class="form-control btn btn-primary btn-info" onclick="getComputeByInput();"  value="Compute"/>
+
+                                
+                            </th>
+                            
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+
+   
+    <div class="col-sm-12">
+        <div class="form-group">
+            <ul class="nav nav-tabs" role="tablist">
+                <li class="active">
+                    <a data-toggle="tab" role="tab" href="#h-Metric" title="The result in metric (KG/KM)"><b> Metric</b> <small>(KG / KM)</small></a>
+                </li>
+                <li>
+                    <a data-toggle="tab" role="tab" href="#h-Standard" title="The result in standard (LBS/MI)"><b>Standard</b> <small>(LBS / MI)</small></a>
+                </li>
+            </ul>
+            <div class="tab-content">
+                <div id="h-Metric" class="tab-pane fade in active">
+
+                    
+                    <div class="form-group text-center" id="ChildResultTotalViewHead" hidden="hidden" style="margin-left:0px; width:930px">
+                        
+
+
+
+<table class="table table-hover" id="tableTotal" title="The result in metric(KG/KM)">
+    <caption class="table-condensed" style=" background-color:#477dc0; color: #ffffff;">Total</caption>
+    <thead>
+        <tr style="background-color: #477dc0; color:#ffffff;">
+            <th>
+                Dep Airport
+            </th>
+            <th>
+                Arr Airport
+            </th>
+            <th>
+                Number of passengers
+            </th>
+            <th>
+                Cabin Class
+            </th>
+            <th style="vertical-align: middle">
+                Trip
+            </th>
+            <th>
+                Aircraft Fuel Burn/journey (KG)<sup style="color:yellow">ab</sup>
+            </th>
+            <th>
+                Total passengers’ CO2/journey (KG)<sup style="color:yellow">c</sup>
+</th>
+        </tr>
+    </thead>
+
+    <tbody>
+
+    </tbody>
+</table>
+
+                    </div>
+                    <div class="form-group text-center" id="ChildResultDetailViewHead" hidden="hidden" style="margin-left:0px; width:930px">
+                        
+<table class="table table-hover" id="tableDetail" title="The result in metric(KG/KM)">
+    <caption class="table-condensed" style=" background-color:#477dc0; color: #ffffff;">Flight Stage Detail</caption>
+    <thead>
+        <tr style="background-color: #337AB7; color:#ffffff;">
+            <th>
+                Dep Airport
+            </th>
+            <th>
+                Arr Airport
+            </th>
+            <th>
+                Distance <small>(KM)</small>
+</th>
+            <th>
+                Aircraft
+            </th>
+            
+            <th>
+                
+                    Aircraft Fuel Burn/leg <small>(KG)</small><sup style="color:yellow">a</sup>
+                
+                    
+</th>
+            <th>
+                Passenger CO<sub>2</sub>/pax/leg <small>(KG)</small>
+                 
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+
+    </tbody>
+</table>
+<div style="text-align:left">
+    <p>
+        a. Fuel Burn information provided are for 1 aircraft per leg
+    </p>
+    <p>
+        b. Aircraft Fuel Burn/journey = ∑Aircraft Fuel Burn/leg
+    </p>
+    <p>
+        c. Total passengers’ CO2/journey = ∑Passenger CO2/pax/leg&#215;Number of pax
+    </p>
+</div>
+                    </div>
+                    
+                    <div class="form-group text-center" id="ChildMapViewHead">
+                        
+
+
+
+
+
+
+
+<input type="hidden" name="message" value='' id="hidden1" />
+
+<div id="Mapcontainer" style="max-height:600px">
+
+
+</div>
+
+
+<script type="text/javascript">
+
+
+
+        $(function () {
+            $(document).tooltip();
+
+            //初始化图上点和相应信息
+            var Points1 = document.getElementById("hidden1").value;//json
+
+            //var Points2 = document.getElementById("hidden2").value;//array
+
+            //var Points3 = document.getElementById("hidden3").value;//list
+
+            //var Points4 = document.getElementById("hidden4").value;//list
+
+            //alert("Points1.length:" + Points1.length + "\n Points1:" + Points1  + "\n Points2.length:" + Points2.length + "\n Points2:" + Points2[0] +
+            //   "\n Points3.length:" + Points3.length + "\n Points3:" + Points3 + "\n Points4.length:" + Points4.length + "\n Points4:" + Points4);
+
+
+            var obj;
+
+            if (Points1.length == 0 | Points1 == "null") {
+                //no use initil the point only draw the back map
+                obj = '';
+
+
+            } else {
+                obj = $.parseJSON(Points1);
+
+            }
+
+            var height = 800;
+            var width = 960;
+            var svg = d3.select('#Mapcontainer').append('svg');
+            ////箭头
+            //var defs = svg.append("defs");
+
+            //var endarrowMarker = defs.append("marker")
+            //                        .attr("id", "endArrow")
+            //                        .attr("markerUnits", "strokeWidth")
+            //                        .attr("markerWidth", "10")
+            //                        .attr("markerHeight", "10")
+            //                        .attr("viewBox", "0 0 12 12")
+            //                        .attr("refX", "6")
+            //                        .attr("refY", "6")
+            //                        .attr("orient", "auto");
+            //var arrow_path = "M2,2 L10,6 L2,10 L6,6 L2,2";
+
+            //endarrowMarker.append("path")
+            //            .attr("d", arrow_path)
+            //            .attr("fill", "#000")
+            //            .attr('fill-opacity', 1);
+            //var midarrowMarker = defs.append("marker")
+            //                        .attr("id", "midArrow")
+            //                        .attr("markerUnits", "strokeWidth")
+            //                        .attr("markerWidth", "10")
+            //                        .attr("markerHeight", "10")
+            //                        .attr("viewBox", "0 0 12 12")
+            //                        .attr("refX", "6")
+            //                        .attr("refY", "6")
+            //                        .attr("orient", "auto");
+            //var arrow_path1 = "M2,2 L10,6 L2,10 L6,6 L2,2";
+
+            //midarrowMarker.append("path")
+            //            .attr("d", arrow_path1)
+            //            .attr("fill", "#000")
+            //            .attr('fill-opacity', 1);
+
+            //var startMarker = defs.append("marker")
+            //            .attr("id", "startPoint")
+            //            .attr("markerUnits", "strokeWidth")
+            //            .attr("markerWidth", "12")
+            //          .attr("markerHeight", "12")
+            //          .attr("viewBox", "0 0 12 12")
+            //          .attr("refX", "6")
+            //          .attr("refY", "6")
+            //          .attr("orient", "auto");
+
+            //startMarker.append("circle")
+            //            .attr("cx", 6)
+            //            .attr("cy", 6)
+            //            .attr("r", 2)
+            //            .attr("fill", "#000");
+            //标牌
+            var tooltip = d3.select('#Mapcontainer')
+                                        .append("div")
+                                        .attr("id","tip")
+                                        .attr("class", "tooltip")
+                                        .style("opacity", 0.0);
+
+            var sumpointsNo = obj.length;
+
+            if (sumpointsNo > 1) {
+                //draw map and points need 2 points lest
+                //d3.json("http://www.ourd3js.com/map/worldmap/world.json", function (data) {
+                //d3.json("http://www.cafucatc.com/world-countries.json", function (data) {
+                d3.json('/icec/world-countries.json', function (data) {
+
+
+                    var features = _.filter(data.features, function (value, key) {
+                        return value.properties.name != 'Antarctica';
+                        //return value
+                    });
+                    
+                    var projection = d3.geo.mercator()
+                        .center([0, 0])
+                        .scale(130)
+                        .translate([width / 2, height / 2]);
+                    var path = d3.geo.path()
+                        .projection(projection)
+
+                    svg.attr('width', width).attr('height', height);
+                    svg.selectAll('path').data(features).enter().append('svg:path')
+                    .attr('d', path)
+                    //.on('mouseover', function (data) { d3.select(this).attr('fill', 'rgba(2,,2,139,0.61)'); })
+                    //.on('mouseout', function (data) { d3.select(this).attr('fill', 'rgba(141,238,238,1)'); })
+                    .attr('fill', 'rgba(141,238,238,1)')
+                    .attr('stroke', 'rgba(255,255,255,1)')
+                    .attr('stroke-width', 1);
+
+                    //add by lu 20160228
+                    //箭头
+                    var defs = svg.append("defs");
+
+                    var endarrowMarker = defs.append("marker")
+                                            .attr("id", "endArrow")
+                                            .attr("markerUnits", "strokeWidth")
+                                            .attr("markerWidth", "5")
+                                            .attr("markerHeight", "5")
+                                            .attr("viewBox", "0 0 12 12")
+                                            .attr("refX", "6")
+                                            .attr("refY", "6")
+                                            .attr("orient", "auto");
+                    var arrow_path = "M2,2 L10,6 L2,10 L6,6 L2,2";
+
+                    endarrowMarker.append("path")
+                                .attr("d", arrow_path)
+                                .attr("fill", "#000")
+                                .attr('fill-opacity', 1);
+                    var midarrowMarker = defs.append("marker")
+                                            .attr("id", "midArrow")
+                                            .attr("markerUnits", "strokeWidth")
+                                            .attr("markerWidth", "5")
+                                            .attr("markerHeight", "5")
+                                            .attr("viewBox", "0 0 12 12")
+                                            .attr("refX", "6")
+                                            .attr("refY", "6")
+                                            .attr("orient", "auto");
+                    var arrow_path1 = "M2,2 L10,6 L2,10 L6,6 L2,2";
+
+                    midarrowMarker.append("path")
+                                .attr("d", arrow_path1)
+                                .attr("fill", "#000")
+                                .attr('fill-opacity', 1);
+
+                    var startMarker = defs.append("marker")
+                                .attr("id", "startPoint")
+                                .attr("markerUnits", "strokeWidth")
+                                .attr("markerWidth", "5")
+                              .attr("markerHeight", "5")
+                              .attr("viewBox", "0 0 12 12")
+                              .attr("refX", "6")
+                              .attr("refY", "6")
+                              .attr("orient", "auto");
+
+                    startMarker.append("circle")
+                                .attr("cx", 6)
+                                .attr("cy", 6)
+                                .attr("r", 2)
+                                .attr("fill", "#000");
+
+                    ////加点rgba(128,124,139,0.61)
+                    var point = new Array(sumpointsNo);
+                    //var point;
+                    debugger;
+                    //in order to help to define it is round trip or one way
+                    var startpoint;
+                    var endpoint;
+
+                    for (var i = 0; i < sumpointsNo; i++)
+                    {
+                        // ！！！！先lonDec 后 latDec！！！！//
+                        point[i] = projection([obj[i].LonDec, obj[i].LatDec]);
+                        svg.append('text')
+                        .attr('x', point[i][0])
+                        .attr('y', point[i][1])
+                            .attr("title", obj[i].city_name + ',' + obj[i].state_code + '(' + obj[i].airport_code + ')')
+                        .text(obj[i].airport_code);
+
+                        startpoint = point[0];
+                        endpoint = point[sumpointsNo - 1];
+                    }
+
+                    var round_trip;
+                    // Make sure the trip type is round trip or one way
+                    if ((startpoint[0] == endpoint[0])&& (startpoint[1]== endpoint[1])) {
+                        round_trip = true;
+                    } else {
+                        round_trip = false;
+                    }
+
+                    //描线
+                    var rx=1500;
+                    var ry=1500;
+                    var x_axis_rotation=1;
+                    var large_arc_flag=0;
+                    var sweep_flag = 0;
+                    var pathS = new Array(sumpointsNo - 1);
+                    var j = 0;
+                    var strArray = new Array(sumpointsNo - 1);
+
+                  
+
+                    for (var i = 0; i < (sumpointsNo - 1) ; i++) {
+                     
+
+                        //ARC 
+                        //pathS[i] = 'M ' + point[i][0] + ' ' + point[i][1]+' ' + ' A ' +' '+ rx+' ' + ry+' ' + x_axis_rotation+' ' + large_arc_flag+' '+ sweep_flag +' '
+                        //point[i + 1][0] + ' ' + point[i + 1][1];
+                        // if the trip type is round trip it need to draw the line
+                        if (round_trip) {
+                            if (i < ((sumpointsNo - 1) / 2)) {
+                               pathS[i] = 'M ' + point[i][0] + ' ' + point[i][1] + ' ' + ' A 1500 1500 0 0 1' + ' ' +
+                               point[i + 1][0] + ' ' + point[i + 1][1];
+
+                            } else {
+
+                                pathS[i] = 'M ' + point[i][0] + ' ' + point[i][1] + ' ' + ' A 1500 1500 1 0 0' + ' ' +
+                                point[i + 1][0] + ' ' + point[i + 1][1];
+                            }
+
+                        } else {
+
+                            pathS[i] = 'M ' + point[i][0] + ' ' + point[i][1] + ' ' + ' A 1500 1500 0 0 1' + ' ' +
+                            point[i + 1][0] + ' ' + point[i + 1][1];
+
+                        }
+
+                        //if (i < ((sumpointsNo - 1) / 2)) {
+                        //            pathS[i] = 'M ' + point[i][0] + ' ' + point[i][1] + ' ' + ' A 1500 1500 0 0 1' + ' ' +
+                        //            point[i + 1][0] + ' ' + point[i + 1][1];
+                        //} else {
+                        //            pathS[i] = 'M ' + point[i][0] + ' ' + point[i][1] + ' ' + ' A 1500 1500 1 0 0' + ' ' +
+                        //            point[i + 1][0] + ' ' + point[i + 1][1];
+                        //}
+
+                        
+
+
+                        //pathS[i] = 'M ' + point[i][0] + ' ' + point[i][1] + ' Q ' + (point[i][0] - 100) + ' ' + (point[i][1] - 50) + ', ' +
+                        //   point[i + 1][0] + ' ' + point[i + 1][1];
+
+                        //+' , T' + point[i + 1][0] + ' ' + point[i + 1][1];
+                        //两次贝塞尔曲线 M x0,y0 Q x1,y1 x2,y2
+                        //通过M定义（x0, y0）为起点，用Q定义（x1, y1）为控制点，（x2, y2）为终点，构成一条二次贝塞尔曲线
+                        svg.append('path')
+                        .attr('d', pathS[i])
+                        .datum({ type: "Sphere" })
+                        .attr("stroke", "blue")
+                        .attr("stroke-width", 1.25)
+                        .attr("fill", "#fff")
+                        .attr('fill-opacity', 0.0)
+                        .attr("marker-start", "url(#startPoint)")
+                        //.attr("marker-mid", "url(#midArrow)")
+                        .attr("marker-end", "url(#endArrow)")
+
+                        .on('mouseover', function (e)
+                        {
+
+
+                            d3.select(this).attr('stroke', 'red');
+                        })
+                        .on('mouseout', function (e)
+                        {
+
+                            d3.select(this).attr('stroke', 'blue');
+                        });
+                        //svg.append('text')
+                        //.attr('x', xx)
+                        //.attr('y', yy)
+                        //.attr("title", obj[i].airport_code + '-----' + obj[i+1].airport_code)
+                        //.text(obj[i].airport_code + '--' + obj[i + 1].airport_code);
+
+                    }
+
+
+
+
+                    //标牌 tooltip
+                    //添加一个提示框 为箭头添加事件
+
+
+
+                });
+
+                
+            }
+            else {
+                //draw map
+                //d3.json("http://www.ourd3js.com/map/worldmap/world.json", function (data) {
+                //d3.json("http://www.cafucatc.com/world-countries.json", function (data) {
+                d3.json('/icec/world-countries.json', function (data) {
+
+
+                    var features = _.filter(data.features, function (value, key) {
+                        return value.properties.name != 'Antarctica';
+                        //return value;
+                    });
+                    var projection = d3.geo.mercator()
+                        .center([0, 0])
+                        .scale(130)
+                        .translate([width / 2, height / 2]);
+                    var path = d3.geo.path()
+                        .projection(projection)
+
+                    svg.attr('width', width).attr('height', height);
+                    svg.selectAll('path').data(features).enter().append('svg:path')
+                    .attr('d', path)
+                    .on('mouseover', function (data) { d3.select(this).attr('fill', 'rgba(2,2,139,0.61)'); })
+                    .on('mouseout', function (data) { d3.select(this).attr('fill', 'rgba(141,238,238,1)'); })
+                    .attr('fill', 'rgba(141,238,238,1)')
+                    .attr('stroke', 'rgba(255,255,255,1)')
+                    .attr('stroke-width', 1);
+                    svg.append('path')
+                    .attr('stroke-width', 2)
+                    .attr('stroke', 'rgba(0,255,0,1)')
+                    .attr('fill', 'rgba(255,255,255,0)');
+                });
+
+
+            }
+        });
+</script>
+
+                    </div>
+
+                    </div>
+                
+                <div id="h-Standard" class="tab-pane fade">
+
+                    
+
+                    <div class="form-group text-center" id="ChildResultTotalViewSTHead" hidden="hidden" style="margin-left:0px; width:930px">
+                        
+
+
+
+<table class="table table-hover" id="tableTotal" title="The result in standard(LBS/MI)">
+    <caption class="table-condensed" style=" background-color:#477dc0; color: #ffffff;">Total</caption>
+    <thead>
+        <tr style="background-color: #477dc0; color:#ffffff;">
+            <th>
+                Dep Airport
+            </th>
+            <th>
+                Arr Airport
+            </th>
+            <th>
+               Number of passengers
+            </th>
+            <th>
+                Cabin Class
+            </th>
+            <th style="vertical-align: middle">
+                Trip
+            </th>
+            
+            <th>
+                
+                Aircraft Fuel Burn/journey (LBS)<sup style="color:yellow">ab</sup>
+            </th>
+            <th>
+                
+                Total passengers’ CO2/journey (LBS)<sup style="color:yellow">c</sup>
+            </th>
+        </tr>
+    </thead>
+
+    <tbody>
+
+    </tbody>
+</table>
+
+
+                    </div> 
+
+                    <div class="form-group text-center" id="ChildResultDetailViewSTHead" hidden="hidden" style="margin-left:0px; width:930px">
+                        
+<table class="table table-hover" id="tableDetail" title="The result in standard(LBS/MI)">
+    <caption class="table-condensed" style=" background-color:#477dc0; color: #ffffff;">Flight Stage Detail</caption>
+    <thead>
+        <tr style="background-color: #337AB7; color:#ffffff;">
+            <th>
+                Dep Airport
+            </th>
+            <th>
+                Arr Airport
+            </th>
+            <th>
+                Distance <small>(MI)</small>
+</th>
+            <th>
+                Aircraft
+            </th>
+            
+            
+            <th>
+                
+                    Aircraft Fuel Burn/leg <small>(LBS)</small><sup style="color:yellow">a</sup>
+                    
+               
+           </th>
+            <th>
+                Passenger CO<sub>2</sub>/pax/leg <small>(LBS)</small>
+                
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+
+    </tbody>
+</table>
+
+<div style="text-align:left">
+    <p>
+        a. Fuel Burn information provided are for 1 aircraft per leg
+    </p>
+    <p>
+        b. Aircraft Fuel Burn/journey = ∑Aircraft Fuel Burn/leg
+    </p>
+    <p>
+        c. Total passengers’ CO2/journey = ∑Passenger CO2/pax/leg&#215;Number of pax
+    </p>
+</div>
+                    </div>
+                    
+                    <div class="form-group text-center" id="ChildMapViewSTHead">
+                        
+
+
+
+
+
+
+
+<input type="hidden" name="message" id="hidden1ST" />
+
+<div id="MapcontainerST" style="max-height:600px">
+
+
+</div>
+
+
+<script type="text/javascript">
+
+
+
+    $(function () {
+        $(document).tooltip();
+
+        //初始化图上点和相应信息
+        var Points1 = document.getElementById("hidden1ST").value;//json
+
+        //var Points2 = document.getElementById("hidden2").value;//array
+
+        //var Points3 = document.getElementById("hidden3").value;//list
+
+        //var Points4 = document.getElementById("hidden4").value;//list
+
+        //alert("Points1.length:" + Points1.length + "\n Points1:" + Points1  + "\n Points2.length:" + Points2.length + "\n Points2:" + Points2[0] +
+        //   "\n Points3.length:" + Points3.length + "\n Points3:" + Points3 + "\n Points4.length:" + Points4.length + "\n Points4:" + Points4);
+
+
+        var obj;
+
+        if (Points1.length == 0 | Points1 == "null") {
+            //no use initil the point only draw the back map
+            obj = '';
+
+
+        } else {
+            obj = $.parseJSON(Points1);
+
+        }
+
+        var height = 800;
+        var width = 960;
+        var svg = d3.select('#MapcontainerST').append('svg');
+        
+        //标牌
+        var tooltip = d3.select('#Mapcontainer')
+                                    .append("div")
+                                    .attr("id", "tipST")
+                                    .attr("class", "tooltip")
+                                    .style("opacity", 0.0);
+
+        var sumpointsNo = obj.length;
+        if (sumpointsNo > 1) {
+            //draw map and points need 2 points lest
+            //d3.json("http://localhost:58003/world-countries.json", function (data) {
+            //d3.json("http://www.cafucatc.com/world-countries.json", function (data) {
+            d3.json('/icec/world-countries.json', function (data) {
+
+                var features = _.filter(data.features, function (value, key) {
+                    return value.properties.name != 'Antarctica';
+                    //return value
+                });
+                var projection = d3.geo.mercator()
+                    .center([0, 0])
+                    .scale(130)
+                    .translate([width / 2, height / 2]);
+                var path = d3.geo.path()
+                    .projection(projection)
+
+                svg.attr('width', width).attr('height', height);
+                svg.selectAll('path').data(features).enter().append('svg:path')
+                .attr('d', path)
+                //.on('mouseover', function (data) { d3.select(this).attr('fill', 'rgba(2,,2,139,0.61)'); })
+                //.on('mouseout', function (data) { d3.select(this).attr('fill', 'rgba(141,238,238,1)'); })
+                .attr('fill', 'rgba(141,238,238,1)')
+                .attr('stroke', 'rgba(255,255,255,1)')
+                .attr('stroke-width', 1);
+
+                //add by lu 2016-2-28
+                //箭头
+                var defs = svg.append("defs");
+
+                var endarrowMarker = defs.append("marker")
+                                        .attr("id", "endArrowST")
+                                        .attr("markerUnits", "strokeWidth")
+                                        .attr("markerWidth", "5")
+                                        .attr("markerHeight", "5")
+                                        .attr("viewBox", "0 0 12 12")
+                                        .attr("refX", "6")
+                                        .attr("refY", "6")
+                                        .attr("orient", "auto");
+                var arrow_path = "M2,2 L10,6 L2,10 L6,6 L2,2";
+
+                endarrowMarker.append("path")
+                            .attr("d", arrow_path)
+                            .attr("fill", "#000")
+                            .attr('fill-opacity', 1);
+                var midarrowMarker = defs.append("marker")
+                                        .attr("id", "midArrowST")
+                                        .attr("markerUnits", "strokeWidth")
+                                        .attr("markerWidth", "5")
+                                        .attr("markerHeight", "5")
+                                        .attr("viewBox", "0 0 12 12")
+                                        .attr("refX", "6")
+                                        .attr("refY", "6")
+                                        .attr("orient", "auto");
+                var arrow_path1 = "M2,2 L10,6 L2,10 L6,6 L2,2";
+
+                midarrowMarker.append("path")
+                            .attr("d", arrow_path1)
+                            .attr("fill", "#000")
+                            .attr('fill-opacity', 1);
+
+                var startMarker = defs.append("marker")
+                            .attr("id", "startPointST")
+                            .attr("markerUnits", "strokeWidth")
+                            .attr("markerWidth", "5")
+                          .attr("markerHeight", "5")
+                          .attr("viewBox", "0 0 12 12")
+                          .attr("refX", "6")
+                          .attr("refY", "6")
+                          .attr("orient", "auto");
+
+                startMarker.append("circle")
+                            .attr("cx", 6)
+                            .attr("cy", 6)
+                            .attr("r", 2)
+                            .attr("fill", "#000");
+
+                ////加点rgba(128,124,139,0.61)
+                var point = new Array(sumpointsNo);
+                //var point;
+
+                //in order to help to define it is round trip or one way
+                var startpoint;
+                var endpoint;
+
+                for (var i = 0; i < sumpointsNo; i++) {
+                    // ！！！！先lonDec 后 latDec！！！！//
+                    point[i] = projection([obj[i].LonDec, obj[i].LatDec]);
+                    svg.append('text')
+                    .attr('x', point[i][0])
+                    .attr('y', point[i][1])
+                        .attr("title", obj[i].city_name + ',' + obj[i].state_code + '(' + obj[i].airport_code + ')')
+                    .text(obj[i].airport_code);
+
+                    startpoint = point[0];
+                    endpoint = point[sumpointsNo - 1];
+                }
+
+                var round_trip;
+                // Make sure the trip type is round trip or one way
+                if ((startpoint[0] == endpoint[0]) && (startpoint[1] == endpoint[1])) {
+                    round_trip = true;
+                } else {
+                    round_trip = false;
+                }
+
+                //描线
+                var rx = 1500;
+                var ry = 1500;
+                var x_axis_rotation = 1;
+                var large_arc_flag = 0;
+                var sweep_flag = 0;
+                var pathS = new Array(sumpointsNo - 1);
+                var j = 0;
+                var strArray = new Array(sumpointsNo - 1);
+
+                for (var i = 0; i < (sumpointsNo - 1) ; i++) {
+
+                    if (round_trip) {
+                        if (i < ((sumpointsNo - 1) / 2)) {
+                            pathS[i] = 'M ' + point[i][0] + ' ' + point[i][1] + ' ' + ' A 1500 1500 0 0 1' + ' ' +
+                            point[i + 1][0] + ' ' + point[i + 1][1];
+
+                        } else {
+
+                            pathS[i] = 'M ' + point[i][0] + ' ' + point[i][1] + ' ' + ' A 1500 1500 1 0 0' + ' ' +
+                            point[i + 1][0] + ' ' + point[i + 1][1];
+                        }
+
+                    } else {
+
+                        pathS[i] = 'M ' + point[i][0] + ' ' + point[i][1] + ' ' + ' A 1500 1500 0 0 1' + ' ' +
+                        point[i + 1][0] + ' ' + point[i + 1][1];
+
+                    }
+                    
+                    //pathS[i] = 'M ' + point[i][0] + ' ' + point[i][1] + ' Q ' + xx + ' ' + yy + ', ' +
+                    //   point[i + 1][0] + ' ' + point[i + 1][1];
+
+                    //pathS[i] = 'M ' + point[i][0] + ' ' + point[i][1] + ' Q ' + (point[i][0] - 100) + ' ' + (point[i][1] - 50) + ', ' +
+                    //   point[i + 1][0] + ' ' + point[i + 1][1];
+
+                    //+' , T' + point[i + 1][0] + ' ' + point[i + 1][1];
+                    //两次贝塞尔曲线 M x0,y0 Q x1,y1 x2,y2
+                    //通过M定义（x0, y0）为起点，用Q定义（x1, y1）为控制点，（x2, y2）为终点，构成一条二次贝塞尔曲线
+                    svg.append('path')
+                    .attr('d', pathS[i])
+                    .attr("stroke", "blue")
+                    .attr("stroke-width", 1.25)
+                    .attr("fill", "#fff")
+                    .attr('fill-opacity', 0.0)
+                    .attr("marker-start", "url(#startPointST)")
+                    //.attr("marker-mid", "url(#midArrowST)")
+                    .attr("marker-end", "url(#endArrowST)")
+
+                    .on('mouseover', function (e) {
+
+
+                        d3.select(this).attr('stroke', 'red');
+                    })
+                    .on('mouseout', function (e) {
+
+                        d3.select(this).attr('stroke', 'blue');
+                    });
+                    //svg.append('text')
+                    //.attr('x', xx)
+                    //.attr('y', yy)
+                    //.attr("title", obj[i].airport_code + '-----' + obj[i + 1].airport_code)
+                    //.text(obj[i].airport_code + '--' + obj[i + 1].airport_code);
+
+
+                }
+
+
+                //标牌 tooltip
+                //添加一个提示框 为箭头添加事件
+
+
+
+            });
+        }
+        else {
+            //draw map
+            //d3.json("http://localhost:58003/world-countries.json", function (data) {
+            //d3.json("http://www.cafucatc.com/world-countries.json", function (data) {
+            d3.json('/icec/world-countries.json', function (data) {
+
+                var features = _.filter(data.features, function (value, key) {
+                    return value.properties.name != 'Antarctica';
+                    //return value
+                });
+                var projection = d3.geo.mercator()
+                    .center([0, 0])
+                    .scale(130)
+                    .translate([width / 2, height / 2]);
+                var path = d3.geo.path()
+                    .projection(projection)
+
+                svg.attr('width', width).attr('height', height);
+                svg.selectAll('path').data(features).enter().append('svg:path')
+                .attr('d', path)
+                .on('mouseover', function (data) { d3.select(this).attr('fill', 'rgba(2,2,139,0.61)'); })
+                .on('mouseout', function (data) { d3.select(this).attr('fill', 'rgba(141,238,238,1)'); })
+                .attr('fill', 'rgba(141,238,238,1)')
+                .attr('stroke', 'rgba(255,255,255,1)')
+                .attr('stroke-width', 1);
+                svg.append('path')
+                .attr('stroke-width', 2)
+                .attr('stroke', 'rgba(0,255,0,1)')
+                .attr('fill', 'rgba(255,255,255,0)');
+            });
+
+
+        }
+    });
+
+
+
+</script>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+    var proposals = ['boat', 'bear', 'dog', 'drink', 'elephant', 'fruit'];
+
+    //////////////这是js写法
+
+
+    ////////////////这是jquery写法，并转换为DOM
+    var tmpClonefrm1 = $('.frm1');
+    var tmpCloneto1 = $('.to1');
+    var tmpClonedelete1 = $('.delete1');
+    var tmpClonecitytablebody = $('.citytablebody');
+
+
+    var noForArrAirport = 1;
+    var myfrm1 = '#';
+    var myto1 = '#';
+    var myfrm2 = '#';
+    var myto2 = '#';
+    var myfrm3='#';
+    var myto3 = '#';
+
+
+   
+    function reduce() {
+        if(noForArrAirport>1)
+        {
+            $(".first" + noForArrAirport).remove();
+            noForArrAirport--;
+
+        }
+        else
+        {
+            alert("It is not allowed to delete this row.");
+        }
+        //switch (a) {
+        //    case 1:
+                
+        //        noForArrAirport--;
+        //        $(".first" + a).remove();
+        //        if (noForArrAirport > 1)
+        //        {
+        //            $(".first" + a + 1).remove();
+        //            $(".first" + a + 2).remove();
+
+        //            add(1);
+        //            add(2);
+        //        }
+        //        else
+        //        {
+        //            $(".first" + a + 1).remove();
+        //            add(1);
+
+        //        }
+  
+        //        break;
+        //    case 2:
+        //        break;
+        //    case 3:
+        //        $(".first" + a).remove();
+        //        noForArrAirport--;
+        //        break;
+        //    default:
+        //        alert("No Delete!");
+
+        //};
+        //a>0
+        //if (a > 1) {
+        //    //add by lu 20160303
+        //    //if a=2
+        //    if (a == 2)
+        //    {
+
+        //    }
+        //    else
+        //    {
+        //        $(".first" + a).remove();
+        //        noForArrAirport--;
+        //    }
+
+            
+        //}
+        //else {
+
+        //    alert("No Delete!");
+        //}
+
+        
+        
+
+    }
+    //Add New Attendee Location
+    function add() {
+
+        //add for clone
+        var obj = tmpClonecitytablebody.find("tr").first();///tr first1
+        switch (noForArrAirport) {
+            default:
+                alert("It is not allowed to add more than three destinations.");
+                break;
+            case 1:
+                //var cloneObj = obj.clone(true, true);
+
+                var cloneObj = obj.clone();
+                cloneObj.attr("class", "first2 success");
+                ////////////////////注意：.class选择器返回的是数据对象需从中取出
+                var textout = $('.to1').first().valueOf()[0].value;
+                cloneObj.find("label").eq(0).html("2");
+                cloneObj.find("input").eq(0).attr({
+                    "name": "frm2",
+                    "class": "frm2 col-sm-12",
+                    "disabled": "disabled",
+                    "type": "text",
+                    "textContent": textout
+                })
+                .text(textout)
+                .val(textout)
+                .addClass("ui-autocomplete-input");
+
+                cloneObj.find("input").eq(1).attr({
+                    "name": "to2",
+                    "class": "to2 col-sm-12",
+
+                })
+                .val("");
+                //cloneObj.find("input").eq(2).attr({
+                //    "name": "delete2",
+                //    "class": "btn btn-primary delete2",
+                //    "onclick": "reduce(2)"
+                //});
+
+
+                //注册事件
+                cloneObj.delegate(".frm2", "input", function () {
+                    $('.frm2').autocomplete({
+                        source: function (request, response) {
+                            $.ajax({
+                                url: "/icec/Home/AutoCompleted",
+                                type: "POST",
+                                dataType: "json",
+                                //contentType:"application/json;charset=UTF-8",
+                                data: {
+                                    keyword: request.term
+                                },
+                                async: false,
+                                success: function (data) {
+
+                                    response($.map(data, function (item) {
+                                        //alert(item.codeAirport);
+                                        return {
+                                            label: item.label,
+                                            value: item.value
+
+                                        }
+                                    }))
+
+                                }//end success
+                            })
+
+                        },//endofsource
+                        select: function (event, ui) {
+                            myfrm2 = ui.item.value;
+
+                        },
+                        minLength: 0,
+                        autoFocus: true
+                    });
+                });
+
+
+                cloneObj.delegate(".to2", "input", function () {
+                    $('.to2').autocomplete({
+                        source: function (request, response) {
+                            $.ajax({
+                                url: "/icec/Home/AutoCompletedByDep",
+                                type: "POST",
+                                dataType: "json",
+                                //contentType:"application/json;charset=UTF-8",
+                                data:
+                                {
+                                    keyword1: $('.frm2').val(),
+                                    keyword2: request.term
+                                },
+                                async: false,
+                                success: function (data) {
+
+                                    response($.map(data, function (item) {
+                                        //alert(item.codeAirport);
+                                        return {
+                                            label: item.label,
+                                            value: item.value
+
+                                        }
+                                    }))
+
+                                }//end success
+                            })
+
+                        },//endofsource
+                        minLength: 0,
+                        autoFocus: true,
+                        select: function (event, ui) {
+                            //设置frm3的值
+                            myto2 = ui.item.value;
+                            myfrm3 = ui.item.value;
+
+                            var tripType = $("#select1").find("option:selected").text();
+
+                            $(".to2").val(ui.item.label);
+                            $(".frm3").val(ui.item.value);
+                            $(".frm3").attr("disabled", "disabled");
+                            $(".to3").val("");
+
+                            if (tripType == 'Round Trip') {
+                            //check the roundtrip add by lu 20140421 Check_RoundTrip (string frm,string to)
+                            $.ajax({
+                                url:"/icec/Home/Check_RoundTrip",
+                                type: "post",
+                            datatype: "json",
+                            data:
+                            {
+                                frm: myfrm2,
+                                to: myto2
+                            },
+                            async: false,
+                            success: function (data) {
+                                var result = parseInt(data[0].ResultRoundTrip);
+                                if(result==0)
+                                {
+                                    alert("Round trip is not availiable for the city pair " + myfrm2 + "--" + myto2 + ".Please choose one way");
+                                }
+                            }
+
+                            });//end of ajax checkRoundtrip
+
+                            }
+                        }
+                    })
+                    .focus(function () {
+                        
+                        $(this).autocomplete('search');
+                        return false;
+                    })
+                });
+                cloneObj.delegate(".to2", "focus", function () {
+                    $('.to2').autocomplete({
+                        source: function (request, response) {
+                            $.ajax({
+                                url: "/icec/Home/AutoCompletedByDep",
+                                type: "POST",
+                                dataType: "json",
+                                //contentType:"application/json;charset=UTF-8",
+                                data:
+                                {
+                                    keyword1: $('.frm2').val(),
+                                    keyword2: request.term
+                                },
+                                async: false,
+                                success: function (data) {
+
+                                    response($.map(data, function (item) {
+                                        //alert(item.codeAirport);
+                                        return {
+                                            label: item.label,
+                                            value: item.value
+
+                                        }
+                                    }))
+
+                                }//end success
+                            })
+
+                        },//endofsource
+                        minLength: 0,
+                        autoFocus: true,
+                        select: function (event, ui) {
+                            //设置frm3的值
+                            var tripType = $("#select1").find("option:selected").text();
+                            myto2 = ui.item.value;
+                            myfrm3 = ui.item.value;
+                            $(".to2").val(ui.item.label);
+                            $(".frm3").val(ui.item.value);
+                            $(".frm3").attr("disabled", "disabled");
+                            $(".to3").val("");
+
+                            if (tripType == 'Round Trip') {
+                                //check the roundtrip add by lu 20140421 Check_RoundTrip (string frm,string to)
+                                $.ajax({
+                                    url: "/icec/Home/Check_RoundTrip",
+                                    type: "post",
+                                    datatype: "json",
+                                    data:
+                                    {
+                                        frm: myfrm2,
+                                        to: myto2
+                                    },
+                                    async: false,
+                                    success: function (data) {
+                                        var result = parseInt(data[0].ResultRoundTrip);
+                                        if (result == 0) {
+                                            alert("Round trip is not availiable for the city pair " + myfrm2 + "--" + myto2 + ".Please choose one way");
+                                        }
+                                    }
+
+                                });//end of ajax checkRoundtrip
+                            }
+                        }
+                    })
+        .focus(function () {
+
+            $(this).autocomplete('search');
+            return false;
+        });
+
+
+                });
+
+                //////////////注册完毕
+
+                tmpClonecitytablebody.append(cloneObj);
+                noForArrAirport++;
+                break;
+            case 2:
+                var cloneObj = obj.clone();
+                cloneObj.attr("class", "first3 active");
+                ////////////////////注意：.class选择器返回的是数据对象需从中取出
+                var textout2 = $('.to2').first().valueOf()[0].value;
+                cloneObj.find("label").eq(0).html("3");
+                cloneObj.find("input").eq(0).attr({
+                    "name": "frm3",
+                    "class": "frm3 col-sm-12",
+                    "disabled": "disabled",
+                    "type": "text",
+                    "textContent": textout2
+                })
+                .text(textout2)
+                .val(textout2);
+                cloneObj.find("input").eq(0).addClass("ui-autocomplete-input");
+
+                cloneObj.find("input").eq(1).attr({
+                    "name": "to3",
+                    "class": "to3 col-sm-12",
+
+                })
+                 .val("");
+                //cloneObj.find("input").eq(2).attr({
+                //    "name": "delete3",
+                //    "class": "btn btn-primary delete3",
+                //    "onclick": "reduce(3)"
+                //});
+                //注册事件
+                cloneObj.delegate(".frm3", "input", function () {
+                    $('.frm3').autocomplete({
+                        source: function (request, response) {
+                            $.ajax({
+                                url: "/icec/Home/AutoCompleted",
+                                type: "POST",
+                                dataType: "json",
+                                //contentType:"application/json;charset=UTF-8",
+                                data: {
+                                    keyword: request.term
+                                },
+                                async: false,
+                                success: function (data) {
+
+                                    response($.map(data, function (item) {
+                                        //alert(item.codeAirport);
+                                        return {
+                                            label: item.label,
+                                            value: item.value
+
+                                        }
+                                    }))
+
+                                }//end success
+                            })
+
+                        },//endofsource
+                        select: function (event, ui) {
+                            myfrm3 = ui.item.value;
+                        },
+                        minLength: 1,
+                        autoFocus: false
+                    })
+                });
+                cloneObj.delegate(".to3", "input", function () {
+                    $('.to3').autocomplete({
+                        source: function (request, response) {
+                            $.ajax({
+                                url: "/icec/Home/AutoCompletedByDep",
+                                type: "POST",
+                                dataType: "json",
+                                //contentType:"application/json;charset=UTF-8",
+                                data:
+                                {
+                                    keyword1: $('.frm3').val(),
+                                    keyword2: request.term
+                                },
+                                async: false,
+                                success: function (data) {
+
+                                    response($.map(data, function (item) {
+                                        //alert(item.codeAirport);
+                                        return {
+                                            label: item.label,
+                                            value: item.value
+
+                                        }
+                                    }))
+
+                                }//end success
+                            })
+
+                        },//endofsource
+                        select: function (event, ui) {
+                            myto3 = ui.item.value;
+
+                            var tripType = $("#select1").find("option:selected").text();
+                            //check the roundtrip add by lu 20140421 Check_RoundTrip (string frm,string to)
+
+                            if (tripType == 'Round Trip') {
+                            $.ajax({
+                                url:"/icec/Home/Check_RoundTrip",
+                                type: "post",
+                            datatype: "json",
+                            data:
+                            {
+                                frm: myfrm3,
+                                to: myto3
+                            },
+                            async: false,
+                            success: function (data) {
+                                var result = parseInt(data[0].ResultRoundTrip);
+                                if(result==0)
+                                {
+                                    alert("Round trip is not availiable for the city pair " + myfrm3 + "--" + myto3 + ".Please choose one way");
+                                }
+                             }
+
+                             });//end of ajax checkRoundtrip
+                            }
+                        },
+                        minLength: 0,
+                        autoFocus: true
+                    })
+                    .focus(function () {
+                        $(this).autocomplete('search');
+                        return false;
+                    });
+                });
+                cloneObj.delegate(".to3", "focus", function () {
+                    $('.to3').autocomplete({
+                        source: function (request, response) {
+                            $.ajax({
+                                url: "/icec/Home/AutoCompletedByDep",
+                                type: "POST",
+                                dataType: "json",
+                                //contentType:"application/json;charset=UTF-8",
+                                data:
+                                {
+                                    keyword1: $('.frm3').val(),
+                                    keyword2: request.term
+                                },
+                                async: false,
+                                success: function (data) {
+
+                                    response($.map(data, function (item) {
+                                        //alert(item.codeAirport);
+                                        return {
+                                            label: item.label,
+                                            value: item.value
+
+                                        }
+                                    }))
+
+                                }//end success
+                            })
+
+                        },//endofsource
+                        select: function (event, ui) {
+                            myto3 = ui.item.value;
+                            //check the roundtrip add by lu 20140421 Check_RoundTrip (string frm,string to)
+                            var tripType = $("#select1").find("option:selected").text();
+
+                            if (tripType == 'Round Trip') {
+                                $.ajax({
+                                    url: "/icec/Home/Check_RoundTrip",
+                                    type: "post",
+                                    datatype: "json",
+                                    data:
+                                    {
+                                        frm: myfrm3,
+                                        to: myto3
+                                    },
+                                    async: false,
+                                    success: function (data) {
+                                        var result = parseInt(data[0].ResultRoundTrip);
+                                        if (result == 0) {
+                                            alert("Round trip is not availiable for the city pair " + myfrm3 + "--" + myto3 + ".Please choose one way");
+                                        }
+                                    }
+
+                                });//end of ajax checkRoundtrip
+                            }
+                        },
+                        minLength: 0,
+                        autoFocus: true
+                    })
+        .focus(function () {
+            $(this).autocomplete('search');
+            return false;
+        });
+                });
+                //////////////注册完毕
+                tmpClonecitytablebody.append(cloneObj);
+                noForArrAirport++;
+                break;
+        };
+    };
+    //Delete All Attendee Location(s)
+        function reduceall() {
+            for (var i = 2; i < 4; i++) {
+                $(".first" + i).remove();
+            }
+            noForArrAirport = 1;
+        };
+    //quit this page
+        function quitthis() {
+            window.open('', '_parent', '');
+            window.opener = window;
+            window.close();
+        };
+        function myrefresh() {
+          //  window.location.reload();
+           //document.getElementById("myForm").reset();
+
+            //$('.frm1').first().valueOf()[0].value = '';
+            //$('.frm1').first().valueOf()[0].value = '';
+            //$('.frm1').first().valueOf()[0].value = '';
+
+            //$('.to1').first().valueOf()[0].value = '';
+            //$('.to2').first().valueOf()[0].value = '';
+            //$('.to3').first().valueOf()[0].value = '';
+        };
+        function CheckCompute() {
+            //all value has right value
+            //var par1 = $("#select1").valueOf();
+            //var par2 = $("#select2").valueOf();
+            //var par3 = $('#passengerNo').valueOf();
+            //var par4 = $('.frm1').first().valueOf()[0].value;
+            //var par5 = $('.to1').first().valueOf()[0].value;
+            //var par6;
+            //var par7;
+            //var par8;
+            //var par9;
+            //var par10 = noForArrAirport;
+            //var index = 0;
+            //switch (par10) {
+            //    default:
+            //        alert("Error Input!");
+            //        break;
+            //    case 1:
+            //        //check par 5
+            //        index = 5
+            //        break;
+            //    case 2:
+            //        par6 = $('.frm2').first().valueOf()[0].value;
+            //        par7 = $('.to2').first().valueOf()[0].value;
+            //        index = 7
+            //        break;
+            //    case 3:
+            //        par6 = $('.frm2').first().valueOf()[0].value;
+            //        par7 = $('.to2').first().valueOf()[0].value;
+            //        par8 = $('.frm3').first().valueOf()[0].value;
+            //        par9 = $('.to3').first().valueOf()[0].value;
+            //        index = 9
+            //        break;
+            //}
+            //for (var i = 0; i < index; i++) {
+            //    if (("par" + i + 1).length == 0) {
+            //        alert("Error Input!");
+            //        return false;
+            //    }
+            //}
+            //return true;
+            var par1 = $("#select1").valueOf();
+
+            var tempp = $("#select1").valueOf();
+           
+
+            
+            var par2 = $("#select2").valueOf();
+            var par3 = $('#passengerNo').valueOf();
+            var par4 = myfrm1;
+            var par5 = myto1;
+            var par6 = myfrm2;
+            var par7 = myto2;
+            var par8 = myfrm3;
+            var par9 = myto3;
+            var par10 = noForArrAirport;
+            var index = 0;
+            switch (par10) {
+                default:
+                    alert("Error Input!");
+                    break;
+                case 1:
+                    //check par 5
+                    index = 5
+                    break;
+                case 2:
+                    index = 7
+                    break;
+                case 3:
+                    index = 9
+                    break;
+            }
+            for (var i = 0; i < index; i++) {
+                if (("par" + i + 1).length == 0) {
+                    alert("Error Input!");
+                    return false;
+                }
+            }
+            return true;
+        };
+    //for test
+        function getCompute() {
+
+            $.ajax({
+                type: "POST",
+                url: "/icec/Home/getCompute",
+                data:
+                {
+                    userID: "TEST1013",
+                    unitofMeasureTag: "1",
+                    triptype: "Round Trip",
+                    cabinclass: "Economy",
+                    noofpassenger: 1,
+                    noofArrAirport: 3,
+                    depCode: "DFW",
+                    arrCode1: "AMS",
+                    arrCode2: "ACC",
+                    arrCode3: "CAI"
+                },
+                datatype: "json",
+
+                async: false,
+                success: function (result) {
+                    //return result 嵌套Ajax调用分部视图
+                    ////////////////////////////////////////met
+                    ////////////////////////
+                    //childMapView
+                    $.ajax({
+                        type: "POST",
+                        url: "/icec/Home/ChildMapView",
+                        data:
+                            {
+                                pointsJson: result
+
+                            },//end of data
+                        async: false,
+                        success: function (result) {
+                            //document.getElementById("ChildMapViewHead").innerHTML = result;
+                            $("#ChildMapViewHead").html(result);
+                        },//end of sunccess
+                        error: function (XMLHttpRequest, textStatus, errorThrown) {
+                            alert(errorThrown);
+                        }
+                    });//end of ajax childmapview
+                    ///////////////////////////////
+
+                    //填充界面结果 
+                    var tmp1 = document.getElementById("hiddenResultCompute").value;
+                    var tmp2 = document.getElementById("hiddenResultComputeDetail").value;
+                    //return result 嵌套Ajax调用分部视图
+                    ///////////////////////
+                    //ChildResultTotalView
+                    $.ajax({
+                        type: "POST",
+                        url: "/icec/Home/ChildResultTotalView",
+                        data:
+                    {
+                    },//end of data
+                        async: false,
+                        success: function (result) {
+                            //document.getElementById("ChildMapViewHead").innerHTML = result;
+                            $("ChildResultTotalViewHead").show();
+                            $("#ChildResultTotalViewHead").html(result);
+                        },//end of sunccess
+                        error: function (XMLHttpRequest, textStatus, errorThrown) {
+                            alert(errorThrown);
+                        }
+                    });//end of ajax ChildResultTotalView
+
+                    ///////////////////////////////////////////////
+                    //ChildResultDetailView
+                    $.ajax({
+                        type: "POST",
+                        url: "/icec/Home/ChildResultDetailView",
+                        data:
+                    {
+                    },//end of data
+                        async: false,
+                        success: function (result) {
+                            $("#ChildResultDetailViewHead").show();
+                            //document.getElementById("ChildMapViewHead").innerHTML = result;
+                            $("#ChildResultDetailViewHead").html(result);
+                        },//end of sunccess
+                        error: function (XMLHttpRequest, textStatus, errorThrown) {
+                            alert(errorThrown);
+                        }
+                    });//end of ajax ChildResultDetailView
+                    //////////////////////////////////
+                    ///////////////////////////////////////////////////
+
+
+                    ////////////////////////
+                    //childMapSTView
+                    $.ajax({
+                        type: "POST",
+                        url: "/icec/Home/ChildMapViewST",
+                        data:
+                    {
+                        pointsJson: result
+
+                    },//end of data
+                        async: false,
+                        success: function (result) {
+                            //document.getElementById("ChildMapViewHead").innerHTML = result;
+                            $("#ChildMapViewSTHead").html(result);
+                        },//end of sunccess
+                        error: function (XMLHttpRequest, textStatus, errorThrown) {
+                            alert(errorThrown);
+                        }
+                    });//end of ajax childmapSTview
+                    ///////////////////////////////
+                    //return result 嵌套Ajax调用分部视图
+                    ///////////////////////
+                    //ChildResultTotalView
+                    $.ajax({
+                        type: "POST",
+                        url: "/icec/Home/ChildResultTotalViewST",
+                        data:
+                    {
+                    },//end of data
+                        async: false,
+                        success: function (result) {
+                            //document.getElementById("ChildMapViewHead").innerHTML = result;
+
+                            $("#ChildResultTotalViewSTHead").html(result);
+                            $("#ChildResultTotalViewSTHead").show();
+                        },//end of sunccess
+                        error: function (XMLHttpRequest, textStatus, errorThrown) {
+                            alert(errorThrown);
+                        }
+                    });//end of ajax ChildResultTotalSTView
+
+                    ///////////////////////////////////////////////
+                    //ChildResultDetailSTView
+                    $.ajax({
+                        type: "POST", 
+                        url: "/icec/Home/ChildResultDetailViewST",
+                        data:
+                    {
+                    },//end of data
+                        async: false,
+                        success: function (result) {
+                            //document.getElementById("ChildMapViewHead").innerHTML = result;
+                            $("#ChildResultDetailViewSTHead").html(result);
+                            $("#ChildResultDetailViewSTHead").show();
+                        },//end of sunccess
+                        error: function (XMLHttpRequest, textStatus, errorThrown) {
+                            alert(errorThrown);
+                        }
+                    });//end of ajax ChildResultDetailSTView
+                    //////////////////////////////////
+                    ///////////////////////////////////////////////////
+
+                },//end of success
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    alert(errorThrown);
+                }
+            });
+        };//end of get compute
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////
+        /////////////for normal compute
+        function getComputeByInput() {
+
+            //all value has right value
+            //var par0 = (Math.random() * 100).toString();//for User_ID
+            var par0 = 'Lu';//for User_ID
+            //var par1 = $("#select1").find("option:selected").text(); //trip type
+            var par1 = $("#select1").find("option:selected").text();
+
+            var tempp = $("#select1").find("option:selected").text();
+            
+
+
+
+            var par2 = $("#select2").find("option:selected").text(); //cabin class
+            var par3 = document.getElementById("passengerNo").value; //no of passenger
+
+            var par4 = myfrm1;
+            var par5 = myto1;
+            var par6 = myfrm2;
+            var par7 = myto2;
+            var par8 = myfrm3;
+            var par9 = myto3;
+            var par10 = noForArrAirport;
+            var index = 0;
+            switch (par10) {
+                default:
+                    alert("Error Input!");
+                    break;
+                case 1:
+                    //check par 5
+                    index = 5
+                    break;
+                case 2:
+                    index = 7
+                    break;
+                case 3:
+                    index = 9
+                    break;
+            }
+            //for (var i = 0; i < index; i++) {
+            //    if (("par" + i + 1).length == 0) {
+            //        alert("Error Input!");
+            //        return false;
+            //    }
+            //}
+            var arry = new Array(par0, par1, par2, par3, par4, par5, par6, par7, par8, par9, par10);
+            /////
+            //retrun true； 返回正确的处理结果。
+
+            //return false；分会错误的处理结果，终止处理。
+
+            //return；把控制权返回给页面。
+            var tmp = '';
+            var tag = 1;
+            for (var i = 0; i <= index; i++) {
+                //if (typeof(arry[i]) == 'undefined')
+                //{
+                //    alert("Error in Input undefined");
+                //    return false;
+                //}
+                tmp = arry[i];
+
+                if (tmp == '#') {
+                    alert("Error Input");
+                    tag = 0;
+                    return false;
+                }
+
+            };
+            if (tag == 1) {
+                $.ajax({
+                    type: "POST",
+                    url: "/icec/Home/getCompute",
+                    data:
+                {
+                    userID: par0.toString(),
+                    unitofMeasureTag: "1",
+                    triptype: par1.toString(),
+                    cabinclass: par2.toString(),
+                    noofpassenger: par3,
+                    noofArrAirport: par10,
+                    depCode: par4,
+                    arrCode1: par5,
+                    arrCode2: par7,
+                    arrCode3: par9
+                },
+                    datatype: "json",
+
+                    async: false,
+                    success: function (result) {
+                        //alert("Compute Successful")
+                        //document.getElementById("computeByInput").disabled = true;
+                        //return result 嵌套Ajax调用分部视图
+                        ////////////////////////////////////////met
+                        ////////////////////////
+                        //childMapView
+                        $.ajax({
+                            type: "POST",
+                            url: "/icec/Home/ChildMapView",
+                            data:
+                        {
+                            pointsJson: result
+
+                        },//end of data
+                            async: false,
+                            success: function (result) {
+                                //document.getElementById("ChildMapViewHead").innerHTML = result;
+                                $("#ChildMapViewHead").html(result);
+                            },//end of sunccess
+                            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                                alert(errorThrown);
+                            }
+                        });//end of ajax childmapview
+                        ///////////////////////////////
+
+                        //填充界面结果 
+                        var tmp1 = document.getElementById("hiddenResultCompute").value;
+                        var tmp2 = document.getElementById("hiddenResultComputeDetail").value;
+                        //return result 嵌套Ajax调用分部视图
+                        ///////////////////////
+                        //ChildResultTotalView
+                        $.ajax({
+                            type: "POST",
+                            url: "/icec/Home/ChildResultTotalView",
+                            data:
+                        {
+                        },//end of data
+                            async: false,
+                            success: function (result) {
+                                //document.getElementById("ChildMapViewHead").innerHTML = result;
+                                $("#ChildResultTotalViewHead").show();
+                                $("#ChildResultTotalViewHead").html(result);
+                            },//end of sunccess
+                            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                                alert(errorThrown);
+                            }
+                        });//end of ajax ChildResultTotalView
+
+                        ///////////////////////////////////////////////
+                        //ChildResultDetailView
+                        $.ajax({
+                            type: "POST",
+                            url: "/icec/Home/ChildResultDetailView",
+                            data:
+                        {
+                        },//end of data
+                            async: false,
+                            success: function (result) {
+                                //document.getElementById("ChildMapViewHead").innerHTML = result;
+                                $("#ChildResultDetailViewHead").show();
+                                $("#ChildResultDetailViewHead").html(result);
+                            },//end of sunccess
+                            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                                alert(errorThrown);
+                            }
+                        });//end of ajax ChildResultDetailView
+                        //////////////////////////////////
+                        ///////////////////////////////////////////////////
+
+
+                        ////////////////////////
+                        //childMapSTView
+                        $.ajax({
+                            type: "POST",
+                            url: "/icec/Home/ChildMapViewST",
+                            data:
+                        {
+                            pointsJson: result
+
+                        },//end of data
+                            async: false,
+                            success: function (result) {
+                                //document.getElementById("ChildMapViewHead").innerHTML = result;
+                                $("#ChildMapViewSTHead").html(result);
+                            },//end of sunccess
+                            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                                alert(errorThrown);
+                            }
+                        });//end of ajax childmapSTview
+                        ///////////////////////////////
+                        //return result 嵌套Ajax调用分部视图
+                        ///////////////////////
+                        //ChildResultTotalView
+                        $.ajax({
+                            type: "POST",
+                            url: "/icec/Home/ChildResultTotalViewST",
+                            data:
+                        {
+                        },//end of data
+                            async: false,
+                            success: function (result) {
+                                $("#ChildResultTotalViewSTHead").show();
+                                //document.getElementById("ChildMapViewHead").innerHTML = result;
+                                $("#ChildResultTotalViewSTHead").html(result);
+                            },//end of sunccess
+                            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                                alert(errorThrown);
+                            }
+                        });//end of ajax ChildResultTotalSTView
+
+                        ///////////////////////////////////////////////
+                        //ChildResultDetailSTView
+                        $.ajax({
+                            type: "POST",
+                            url: "/icec/Home/ChildResultDetailViewST",
+                            data:
+                        {
+                        },//end of data
+                            async: false,
+                            success: function (result) {
+                                $("#ChildResultDetailViewSTHead").show();
+                                //document.getElementById("ChildMapViewHead").innerHTML = result;
+                                $("#ChildResultDetailViewSTHead").html(result);
+                            },//end of sunccess
+                            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                                alert(errorThrown);
+                            }
+                        });//end of ajax ChildResultDetailSTView
+                        //////////////////////////////////
+                        ///////////////////////////////////////////////////
+
+                    },//end of success
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        alert(errorThrown);
+                    }
+                });
+            }
+            else {
+                alert("ERROR");
+            };
+
+
+
+        };//end of get computeByInput
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+    $(function () {
+
+        //autocomplete
+        $('.frm1').autocomplete({
+            source: function (request, response) {
+                $.ajax({
+                    url: "/icec/Home/AutoCompleted",
+                    type: "POST",
+                    dataType: "json",
+                    //contentType:"application/json;charset=UTF-8",
+                    data: {
+                        keyword: request.term
+                    },
+
+                    async: false,
+                    success: function (data) {
+
+                        response($.map(data, function (item) {
+                            //alert(item.codeAirport);
+                            return {
+                                label: item.label,
+                                value: item.value
+
+                            }
+                        }))
+
+                    }//end success
+                })
+
+            },//endofsource
+            select: function (event, ui) {
+                //提交搜索...
+                myfrm1 = ui.item.value;
+
+            },
+            minLength: 1,
+            autoFocus: false,
+
+        }//end options
+
+        ); 
+        //frm1 选中后 初始化to1
+       
+        
+        $('.to1').autocomplete({
+            source: function (request, response) {
+                $.ajax({
+                    url: "/icec/Home/AutoCompletedByDep",
+                    type: "POST",
+                    dataType: "json",
+                    //contentType:"application/json;charset=UTF-8",
+                    data:
+                    {
+                        keyword1: $('.frm1').val(),
+                        keyword2: request.term
+                    },
+                    async: false,
+                    success: function (data) {
+
+                        response($.map(data, function (item) {
+                            //alert(item.codeAirport);
+                            return {
+                                label: item.label,
+                                value: item.value
+
+                            }
+                        }))
+
+                    }//end success
+                })
+
+            },//endofsource
+            minLength: 0,
+            autoFocus: true,
+            select: function (event, ui) {
+                //设置frm2的值
+                myto1 = ui.item.value;
+                myfrm2 = ui.item.value;
+                //add by yifei zhang 20140425
+                var tripType = $("#select1").find("option:selected").text();
+
+
+                $(".to1").val(ui.item.label);
+                $(".frm2").val(ui.item.value);
+                $(".frm2").attr("disabled", "disabled");
+                $(".to2").val("");
+
+                if (tripType == 'Round Trip') {
+
+                //check the roundtrip add by lu 20140421 Check_RoundTrip (string frm,string to)
+                $.ajax({
+                    url:"/icec/Home/Check_RoundTrip",
+                    type: "post",
+                    datatype: "json",
+                    data:
+                        {
+                            frm: myfrm1,
+                            to: myto1
+                        },
+                    async: false,
+                    success: function (data) {
+                        var result = parseInt(data[0].ResultRoundTrip);
+                        if(result==0)
+                        {
+                            alert("Round trip is not availiable for the city pair " + myfrm1 + "--" + myto1 + ".Please choose one way");
+                        }
+                    }
+
+                });//end of ajax checkRoundtrip
+
+                
+             }
+            },
+
+        })
+        .focus(function () {
+            $(this).autocomplete('search');
+            return false;
+        });
+
+
+    })
+    </script>
+
+</form>
+
+<footer class="text-center">Copyright 2016 ICAO</footer>
+
+
+
+
+
+
+
+
+
+
+
+        <hr />
+        <footer class="form-group text-center"></footer>
+    </div>
+
+   
+    
+
+ 
+
+
+
+    
+    
+</body>
+</html>

@@ -1,0 +1,350 @@
+
+
+
+
+
+
+
+
+<input type="hidden" name="message" value='[{&quot;Points_ID&quot;:5438594,&quot;Detail_ID&quot;:0,&quot;airport_code&quot;:&quot;BOS&quot;,&quot;airport_name&quot;:&quot;BOSTON&quot;,&quot;city_code&quot;:&quot;BOS&quot;,&quot;city_name&quot;:&quot;BOSTON&quot;,&quot;state_code&quot;:&quot;UNST&quot;,&quot;state_name&quot;:&quot;UNITED STATES&quot;,&quot;LatDec&quot;:42.3644444444444,&quot;LonDec&quot;:-71.0052777777778},{&quot;Points_ID&quot;:5438595,&quot;Detail_ID&quot;:1,&quot;airport_code&quot;:&quot;ATL&quot;,&quot;airport_name&quot;:&quot;ATLANTA-HARTSFIELD-JACKSON&quot;,&quot;city_code&quot;:&quot;ATL&quot;,&quot;city_name&quot;:&quot;ATLANTA&quot;,&quot;state_code&quot;:&quot;UNST&quot;,&quot;state_name&quot;:&quot;UNITED STATES&quot;,&quot;LatDec&quot;:33.6366666666667,&quot;LonDec&quot;:-84.4280555555556}]' id="hidden1" />
+
+<div id="Mapcontainer" style="max-height:600px">
+
+
+</div>
+
+
+<script type="text/javascript">
+
+
+
+        $(function () {
+            $(document).tooltip();
+
+            //初始化图上点和相应信息
+            var Points1 = document.getElementById("hidden1").value;//json
+
+            //var Points2 = document.getElementById("hidden2").value;//array
+
+            //var Points3 = document.getElementById("hidden3").value;//list
+
+            //var Points4 = document.getElementById("hidden4").value;//list
+
+            //alert("Points1.length:" + Points1.length + "\n Points1:" + Points1  + "\n Points2.length:" + Points2.length + "\n Points2:" + Points2[0] +
+            //   "\n Points3.length:" + Points3.length + "\n Points3:" + Points3 + "\n Points4.length:" + Points4.length + "\n Points4:" + Points4);
+
+
+            var obj;
+
+            if (Points1.length == 0 | Points1 == "null") {
+                //no use initil the point only draw the back map
+                obj = '';
+
+
+            } else {
+                obj = $.parseJSON(Points1);
+
+            }
+
+            var height = 800;
+            var width = 960;
+            var svg = d3.select('#Mapcontainer').append('svg');
+            ////箭头
+            //var defs = svg.append("defs");
+
+            //var endarrowMarker = defs.append("marker")
+            //                        .attr("id", "endArrow")
+            //                        .attr("markerUnits", "strokeWidth")
+            //                        .attr("markerWidth", "10")
+            //                        .attr("markerHeight", "10")
+            //                        .attr("viewBox", "0 0 12 12")
+            //                        .attr("refX", "6")
+            //                        .attr("refY", "6")
+            //                        .attr("orient", "auto");
+            //var arrow_path = "M2,2 L10,6 L2,10 L6,6 L2,2";
+
+            //endarrowMarker.append("path")
+            //            .attr("d", arrow_path)
+            //            .attr("fill", "#000")
+            //            .attr('fill-opacity', 1);
+            //var midarrowMarker = defs.append("marker")
+            //                        .attr("id", "midArrow")
+            //                        .attr("markerUnits", "strokeWidth")
+            //                        .attr("markerWidth", "10")
+            //                        .attr("markerHeight", "10")
+            //                        .attr("viewBox", "0 0 12 12")
+            //                        .attr("refX", "6")
+            //                        .attr("refY", "6")
+            //                        .attr("orient", "auto");
+            //var arrow_path1 = "M2,2 L10,6 L2,10 L6,6 L2,2";
+
+            //midarrowMarker.append("path")
+            //            .attr("d", arrow_path1)
+            //            .attr("fill", "#000")
+            //            .attr('fill-opacity', 1);
+
+            //var startMarker = defs.append("marker")
+            //            .attr("id", "startPoint")
+            //            .attr("markerUnits", "strokeWidth")
+            //            .attr("markerWidth", "12")
+            //          .attr("markerHeight", "12")
+            //          .attr("viewBox", "0 0 12 12")
+            //          .attr("refX", "6")
+            //          .attr("refY", "6")
+            //          .attr("orient", "auto");
+
+            //startMarker.append("circle")
+            //            .attr("cx", 6)
+            //            .attr("cy", 6)
+            //            .attr("r", 2)
+            //            .attr("fill", "#000");
+            //标牌
+            var tooltip = d3.select('#Mapcontainer')
+                                        .append("div")
+                                        .attr("id","tip")
+                                        .attr("class", "tooltip")
+                                        .style("opacity", 0.0);
+
+            var sumpointsNo = obj.length;
+
+            if (sumpointsNo > 1) {
+                //draw map and points need 2 points lest
+                //d3.json("http://www.ourd3js.com/map/worldmap/world.json", function (data) {
+                //d3.json("http://www.cafucatc.com/world-countries.json", function (data) {
+                d3.json('/icec/world-countries.json', function (data) {
+
+
+                    var features = _.filter(data.features, function (value, key) {
+                        return value.properties.name != 'Antarctica';
+                        //return value
+                    });
+                    
+                    var projection = d3.geo.mercator()
+                        .center([0, 0])
+                        .scale(130)
+                        .translate([width / 2, height / 2]);
+                    var path = d3.geo.path()
+                        .projection(projection)
+
+                    svg.attr('width', width).attr('height', height);
+                    svg.selectAll('path').data(features).enter().append('svg:path')
+                    .attr('d', path)
+                    //.on('mouseover', function (data) { d3.select(this).attr('fill', 'rgba(2,,2,139,0.61)'); })
+                    //.on('mouseout', function (data) { d3.select(this).attr('fill', 'rgba(141,238,238,1)'); })
+                    .attr('fill', 'rgba(141,238,238,1)')
+                    .attr('stroke', 'rgba(255,255,255,1)')
+                    .attr('stroke-width', 1);
+
+                    //add by lu 20160228
+                    //箭头
+                    var defs = svg.append("defs");
+
+                    var endarrowMarker = defs.append("marker")
+                                            .attr("id", "endArrow")
+                                            .attr("markerUnits", "strokeWidth")
+                                            .attr("markerWidth", "5")
+                                            .attr("markerHeight", "5")
+                                            .attr("viewBox", "0 0 12 12")
+                                            .attr("refX", "6")
+                                            .attr("refY", "6")
+                                            .attr("orient", "auto");
+                    var arrow_path = "M2,2 L10,6 L2,10 L6,6 L2,2";
+
+                    endarrowMarker.append("path")
+                                .attr("d", arrow_path)
+                                .attr("fill", "#000")
+                                .attr('fill-opacity', 1);
+                    var midarrowMarker = defs.append("marker")
+                                            .attr("id", "midArrow")
+                                            .attr("markerUnits", "strokeWidth")
+                                            .attr("markerWidth", "5")
+                                            .attr("markerHeight", "5")
+                                            .attr("viewBox", "0 0 12 12")
+                                            .attr("refX", "6")
+                                            .attr("refY", "6")
+                                            .attr("orient", "auto");
+                    var arrow_path1 = "M2,2 L10,6 L2,10 L6,6 L2,2";
+
+                    midarrowMarker.append("path")
+                                .attr("d", arrow_path1)
+                                .attr("fill", "#000")
+                                .attr('fill-opacity', 1);
+
+                    var startMarker = defs.append("marker")
+                                .attr("id", "startPoint")
+                                .attr("markerUnits", "strokeWidth")
+                                .attr("markerWidth", "5")
+                              .attr("markerHeight", "5")
+                              .attr("viewBox", "0 0 12 12")
+                              .attr("refX", "6")
+                              .attr("refY", "6")
+                              .attr("orient", "auto");
+
+                    startMarker.append("circle")
+                                .attr("cx", 6)
+                                .attr("cy", 6)
+                                .attr("r", 2)
+                                .attr("fill", "#000");
+
+                    ////加点rgba(128,124,139,0.61)
+                    var point = new Array(sumpointsNo);
+                    //var point;
+                    debugger;
+                    //in order to help to define it is round trip or one way
+                    var startpoint;
+                    var endpoint;
+
+                    for (var i = 0; i < sumpointsNo; i++)
+                    {
+                        // ！！！！先lonDec 后 latDec！！！！//
+                        point[i] = projection([obj[i].LonDec, obj[i].LatDec]);
+                        svg.append('text')
+                        .attr('x', point[i][0])
+                        .attr('y', point[i][1])
+                            .attr("title", obj[i].city_name + ',' + obj[i].state_code + '(' + obj[i].airport_code + ')')
+                        .text(obj[i].airport_code);
+
+                        startpoint = point[0];
+                        endpoint = point[sumpointsNo - 1];
+                    }
+
+                    var round_trip;
+                    // Make sure the trip type is round trip or one way
+                    if ((startpoint[0] == endpoint[0])&& (startpoint[1]== endpoint[1])) {
+                        round_trip = true;
+                    } else {
+                        round_trip = false;
+                    }
+
+                    //描线
+                    var rx=1500;
+                    var ry=1500;
+                    var x_axis_rotation=1;
+                    var large_arc_flag=0;
+                    var sweep_flag = 0;
+                    var pathS = new Array(sumpointsNo - 1);
+                    var j = 0;
+                    var strArray = new Array(sumpointsNo - 1);
+
+                  
+
+                    for (var i = 0; i < (sumpointsNo - 1) ; i++) {
+                     
+
+                        //ARC 
+                        //pathS[i] = 'M ' + point[i][0] + ' ' + point[i][1]+' ' + ' A ' +' '+ rx+' ' + ry+' ' + x_axis_rotation+' ' + large_arc_flag+' '+ sweep_flag +' '
+                        //point[i + 1][0] + ' ' + point[i + 1][1];
+                        // if the trip type is round trip it need to draw the line
+                        if (round_trip) {
+                            if (i < ((sumpointsNo - 1) / 2)) {
+                               pathS[i] = 'M ' + point[i][0] + ' ' + point[i][1] + ' ' + ' A 1500 1500 0 0 1' + ' ' +
+                               point[i + 1][0] + ' ' + point[i + 1][1];
+
+                            } else {
+
+                                pathS[i] = 'M ' + point[i][0] + ' ' + point[i][1] + ' ' + ' A 1500 1500 1 0 0' + ' ' +
+                                point[i + 1][0] + ' ' + point[i + 1][1];
+                            }
+
+                        } else {
+
+                            pathS[i] = 'M ' + point[i][0] + ' ' + point[i][1] + ' ' + ' A 1500 1500 0 0 1' + ' ' +
+                            point[i + 1][0] + ' ' + point[i + 1][1];
+
+                        }
+
+                        //if (i < ((sumpointsNo - 1) / 2)) {
+                        //            pathS[i] = 'M ' + point[i][0] + ' ' + point[i][1] + ' ' + ' A 1500 1500 0 0 1' + ' ' +
+                        //            point[i + 1][0] + ' ' + point[i + 1][1];
+                        //} else {
+                        //            pathS[i] = 'M ' + point[i][0] + ' ' + point[i][1] + ' ' + ' A 1500 1500 1 0 0' + ' ' +
+                        //            point[i + 1][0] + ' ' + point[i + 1][1];
+                        //}
+
+                        
+
+
+                        //pathS[i] = 'M ' + point[i][0] + ' ' + point[i][1] + ' Q ' + (point[i][0] - 100) + ' ' + (point[i][1] - 50) + ', ' +
+                        //   point[i + 1][0] + ' ' + point[i + 1][1];
+
+                        //+' , T' + point[i + 1][0] + ' ' + point[i + 1][1];
+                        //两次贝塞尔曲线 M x0,y0 Q x1,y1 x2,y2
+                        //通过M定义（x0, y0）为起点，用Q定义（x1, y1）为控制点，（x2, y2）为终点，构成一条二次贝塞尔曲线
+                        svg.append('path')
+                        .attr('d', pathS[i])
+                        .datum({ type: "Sphere" })
+                        .attr("stroke", "blue")
+                        .attr("stroke-width", 1.25)
+                        .attr("fill", "#fff")
+                        .attr('fill-opacity', 0.0)
+                        .attr("marker-start", "url(#startPoint)")
+                        //.attr("marker-mid", "url(#midArrow)")
+                        .attr("marker-end", "url(#endArrow)")
+
+                        .on('mouseover', function (e)
+                        {
+
+
+                            d3.select(this).attr('stroke', 'red');
+                        })
+                        .on('mouseout', function (e)
+                        {
+
+                            d3.select(this).attr('stroke', 'blue');
+                        });
+                        //svg.append('text')
+                        //.attr('x', xx)
+                        //.attr('y', yy)
+                        //.attr("title", obj[i].airport_code + '-----' + obj[i+1].airport_code)
+                        //.text(obj[i].airport_code + '--' + obj[i + 1].airport_code);
+
+                    }
+
+
+
+
+                    //标牌 tooltip
+                    //添加一个提示框 为箭头添加事件
+
+
+
+                });
+
+                
+            }
+            else {
+                //draw map
+                //d3.json("http://www.ourd3js.com/map/worldmap/world.json", function (data) {
+                //d3.json("http://www.cafucatc.com/world-countries.json", function (data) {
+                d3.json('/icec/world-countries.json', function (data) {
+
+
+                    var features = _.filter(data.features, function (value, key) {
+                        return value.properties.name != 'Antarctica';
+                        //return value;
+                    });
+                    var projection = d3.geo.mercator()
+                        .center([0, 0])
+                        .scale(130)
+                        .translate([width / 2, height / 2]);
+                    var path = d3.geo.path()
+                        .projection(projection)
+
+                    svg.attr('width', width).attr('height', height);
+                    svg.selectAll('path').data(features).enter().append('svg:path')
+                    .attr('d', path)
+                    .on('mouseover', function (data) { d3.select(this).attr('fill', 'rgba(2,2,139,0.61)'); })
+                    .on('mouseout', function (data) { d3.select(this).attr('fill', 'rgba(141,238,238,1)'); })
+                    .attr('fill', 'rgba(141,238,238,1)')
+                    .attr('stroke', 'rgba(255,255,255,1)')
+                    .attr('stroke-width', 1);
+                    svg.append('path')
+                    .attr('stroke-width', 2)
+                    .attr('stroke', 'rgba(0,255,0,1)')
+                    .attr('fill', 'rgba(255,255,255,0)');
+                });
+
+
+            }
+        });
+</script>
