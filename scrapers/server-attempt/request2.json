@@ -1,0 +1,29 @@
+{
+    pointsJson:
+    [
+      {
+        "Points_ID": 5438594,
+        "Detail_ID": 0,
+        "airport_code": "BOS",
+        "airport_name": "BOSTON",
+        "city_code": "BOS",
+        "city_name": "BOSTON",
+        "state_code": "UNST",
+        "state_name": "UNITED STATES",
+        "LatDec": 42.3644444444444,
+        "LonDec": -71.0052777777778
+      },
+      {
+        "Points_ID": 5438595,
+        "Detail_ID": 1,
+        "airport_code": "ATL",
+        "airport_name": "ATLANTA-HARTSFIELD-JACKSON",
+        "city_code": "ATL",
+        "city_name": "ATLANTA",
+        "state_code": "UNST",
+        "state_name": "UNITED STATES",
+        "LatDec": 33.6366666666667,
+        "LonDec": -84.4280555555556
+      }
+    ]
+}

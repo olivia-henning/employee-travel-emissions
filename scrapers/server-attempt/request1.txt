@@ -1,0 +1,15 @@
+URL:          https://applications.icao.int/icec/Home/getCompute
+method:       POST
+content-type: application/JSON
+body:         {
+                 userID:            par0.toString(),  // hard-coded 'Lu' | 2-digit random number | "TESTnnnn"
+                 unitofMeasureTag:  "1",
+                 triptype:          par1.toString(),  // "Round Trip" | "One Way"
+                 cabinclass:        par2.toString(),  // "Economy" | "Premium"
+                 noofpassenger:     par3,             // int, probably 1
+                 noofArrAirport:    par10,            // int, # of arrival airports!
+                 depCode:           par4,             // departure airport code
+                 arrCode1:          par5,             // arrival airport code
+                 arrCode2:          par7,             // up to two more arrival codes
+                 arrCode3:          par9
+              }
